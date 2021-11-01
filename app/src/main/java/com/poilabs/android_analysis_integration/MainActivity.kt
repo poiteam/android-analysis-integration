@@ -81,7 +81,9 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
             if (PackageManager.PERMISSION_GRANTED == grantResults[0]) { // Permission Granted
                 startPoiSdk()
             }
-        }
+        } else if( requestCode == REQUEST_FOREGROUND_LOCATION_REQUEST_CODE) {
+            askRuntimePermissionsIfNeeded()
+      }
     }
 
 
