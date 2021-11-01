@@ -23,6 +23,7 @@ class MyApplication: Application() {
 
         PoiAnalysis.getInstance().enable()
 
+        PoiAnalysis.getInstance().startScan(this)
     }
 
 }
