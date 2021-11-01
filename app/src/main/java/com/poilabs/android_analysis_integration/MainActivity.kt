@@ -70,7 +70,9 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
+        if (grantResults.isEmpty()) {
+            return
+        }
       if (requestCode == REQUEST_COARSE_LOCATION) {
             if (PackageManager.PERMISSION_GRANTED == grantResults[0]) { // Permission Granted
              startPoiSdk()
