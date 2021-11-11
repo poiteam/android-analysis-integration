@@ -6,6 +6,8 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.app.ActivityCompat
 import getpoi.com.poibeaconsdk.PoiAnalysis
 import getpoi.com.poibeaconsdk.models.PoiResponseCallback
@@ -23,6 +25,10 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         askRuntimePermissionsIfNeeded()
+        findViewById<AppCompatButton>(R.id.update).setOnClickListener {
+            val et = findViewById<AppCompatEditText>(R.id.uniqueId)
+            PoiAnalysis.getInstance().updateUniqueId(et.text.toString())
+        }
     }
 
     private fun askRuntimePermissionsIfNeeded() {
