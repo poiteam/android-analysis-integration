@@ -3,17 +3,22 @@ package com.poilabs.android_analysis_integration
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.app.ActivityCompat
 import getpoi.com.poibeaconsdk.PoiAnalysis
 import getpoi.com.poibeaconsdk.models.PoiResponseCallback
-import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), PoiResponseCallback {
+    private var nodeId: AppCompatTextView? = null
+    private var update: AppCompatButton? = null
+    private var uniqueId: AppCompatEditText? = null
+
     companion object {
         private const val REQUEST_FOREGROUND_LOCATION_REQUEST_CODE = 56
         private const val REQUEST_BACKGROUND_LOCATION_REQUEST_CODE = 57
@@ -24,10 +29,12 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        nodeId = findViewById(R.id.nodeId)
+        update = findViewById(R.id.update)
+        uniqueId = findViewById(R.id.uniqueId)
         askRuntimePermissionsIfNeeded()
-        findViewById<AppCompatButton>(R.id.update).setOnClickListener {
-            val et = findViewById<AppCompatEditText>(R.id.uniqueId)
-            PoiAnalysis.getInstance().updateUniqueId(et.text.toString())
+        update?.setOnClickListener {
+            PoiAnalysis.getInstance().updateUniqueId(uniqueId?.text.toString())
         }
     }
 
@@ -101,10 +108,12 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
 
     override fun onResponse(p0: String?) {
         Log.i(TAG, "onResponse: $p0")
+        nodeId?.text = p0
     }
 
     override fun onFail(p0: Exception?) {
         Log.e(TAG, "onFail: ${p0?.localizedMessage}")
+        Toast.makeText(this, p0?.localizedMessage, Toast.LENGTH_SHORT).show()
         p0?.printStackTrace()
     }
 }
