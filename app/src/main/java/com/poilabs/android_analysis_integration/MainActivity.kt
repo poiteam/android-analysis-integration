@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
         nodeId = findViewById(R.id.nodeId)
         update = findViewById(R.id.update)
         uniqueId = findViewById(R.id.uniqueId)
+        PoiAnalysis.getInstance().setPoiResponseListener(this)
         askRuntimePermissionsIfNeeded()
         update?.setOnClickListener {
             PoiAnalysis.getInstance().updateUniqueId(uniqueId?.text.toString())
@@ -103,12 +104,12 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
     private fun startPoiSdk() {
         PoiAnalysis.getInstance().enable()
         PoiAnalysis.getInstance().startScan(applicationContext)
-        PoiAnalysis.getInstance().setPoiResponseListener(this)
     }
 
-    override fun onResponse(p0: String?) {
-        Log.i(TAG, "onResponse: $p0")
-        nodeId?.text = p0
+    override fun onResponse(p0: MutableList<String>?) {
+        runOnUiThread {
+            nodeId?.text = p0?.joinToString(",")
+        }
     }
 
     override fun onFail(p0: Exception?) {
