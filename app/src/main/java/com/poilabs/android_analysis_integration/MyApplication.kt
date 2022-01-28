@@ -17,7 +17,7 @@ class MyApplication : Application() {
             secret = BuildConfig.APPSECRET,
             uniqueId = "this is a test unique id"
         )
-        config.setOpenSystemBluetooth(true)
+        config.setOpenSystemBluetooth(false)
         config.setForegroundServiceIntent(Intent(this, MainActivity::class.java))
         config.enableForegroundService()
         config.setServiceNotificationTitle("Searching for campaigns...")
