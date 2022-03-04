@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
         private const val REQUEST_FOREGROUND_LOCATION_REQUEST_CODE = 56
         private const val REQUEST_BACKGROUND_LOCATION_REQUEST_CODE = 57
         private const val REQUEST_COARSE_LOCATION = 58
+        private const val REQUEST_BLUETOOTH_PERMISSION = 59
         private const val TAG = "MainActivity"
     }
 
@@ -65,6 +67,10 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
                     REQUEST_BACKGROUND_LOCATION_REQUEST_CODE
                 )
             }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                checkBluetoothPermission()
+            }
+
         } else {
             val hasLocalPermission: Int =
                 ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -75,6 +81,18 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
                     REQUEST_COARSE_LOCATION
                 )
             }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.S)
+    fun checkBluetoothPermission() {
+        val hasBluetoothPermission = ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
+        if (!hasBluetoothPermission) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN),
+                REQUEST_BLUETOOTH_PERMISSION
+            )
         }
     }
 
@@ -92,11 +110,19 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
              startPoiSdk()
             }
         } else if (requestCode == REQUEST_BACKGROUND_LOCATION_REQUEST_CODE) {
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+              askRuntimePermissionsIfNeeded()
+              return
+          }
             if (PackageManager.PERMISSION_GRANTED == grantResults[0]) { // Permission Granted
                 startPoiSdk()
             }
         } else if( requestCode == REQUEST_FOREGROUND_LOCATION_REQUEST_CODE) {
             askRuntimePermissionsIfNeeded()
+      } else if (requestCode == REQUEST_BLUETOOTH_PERMISSION) {
+          if (PackageManager.PERMISSION_GRANTED == grantResults[0]) { // Permission Granted
+              startPoiSdk()
+          }
       }
     }
 
