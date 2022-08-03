@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
                 this,
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION
             )
-            if (hasFineLocation != PackageManager.PERMISSION_GRANTED) {
+            if (hasFineLocation != PackageManager.PERMISSION_GRANTED && !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) ) {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(
@@ -57,8 +57,9 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
                     ),
                     REQUEST_FOREGROUND_LOCATION_REQUEST_CODE
                 )
+                return
             }
-            if (hasBackgroundLocation != PackageManager.PERMISSION_GRANTED) {
+            if (hasBackgroundLocation != PackageManager.PERMISSION_GRANTED && !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(
@@ -66,6 +67,7 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
                     ),
                     REQUEST_BACKGROUND_LOCATION_REQUEST_CODE
                 )
+                return
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 checkBluetoothPermission()
@@ -87,7 +89,7 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
     @RequiresApi(Build.VERSION_CODES.S)
     fun checkBluetoothPermission() {
         val hasBluetoothPermission = ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
-        if (!hasBluetoothPermission) {
+        if (!hasBluetoothPermission && !shouldShowRequestPermissionRationale(Manifest.permission.BLUETOOTH_CONNECT)) {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN),
