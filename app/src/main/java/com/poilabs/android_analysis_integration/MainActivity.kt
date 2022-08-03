@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
     private var nodeId: AppCompatTextView? = null
     private var update: AppCompatButton? = null
     private var uniqueId: AppCompatEditText? = null
+    private var isBackgroundPermissionDenied:Boolean = false
 
     companion object {
         private const val REQUEST_FOREGROUND_LOCATION_REQUEST_CODE = 56
@@ -59,7 +60,9 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
                 )
                 return
             }
-            if (hasBackgroundLocation != PackageManager.PERMISSION_GRANTED && !shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+            if (hasBackgroundLocation != PackageManager.PERMISSION_GRANTED
+                && hasFineLocation == PackageManager.PERMISSION_GRANTED
+                &&  !isBackgroundPermissionDenied) {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(
@@ -88,7 +91,10 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
 
     @RequiresApi(Build.VERSION_CODES.S)
     fun checkBluetoothPermission() {
-        val hasBluetoothPermission = ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED
+        val hasBluetoothPermission = ActivityCompat.checkSelfPermission(
+            this,
+            Manifest.permission.BLUETOOTH_CONNECT
+        ) == PackageManager.PERMISSION_GRANTED
         if (!hasBluetoothPermission && !shouldShowRequestPermissionRationale(Manifest.permission.BLUETOOTH_CONNECT)) {
             ActivityCompat.requestPermissions(
                 this,
@@ -112,6 +118,9 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
              startPoiSdk()
             }
         } else if (requestCode == REQUEST_BACKGROUND_LOCATION_REQUEST_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
+                isBackgroundPermissionDenied = true
+            }
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
               askRuntimePermissionsIfNeeded()
               return
