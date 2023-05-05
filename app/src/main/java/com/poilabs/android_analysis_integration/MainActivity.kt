@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
@@ -20,7 +21,11 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
     private var update: AppCompatButton? = null
     private var uniqueId: AppCompatEditText? = null
     private var isBackgroundPermissionDenied:Boolean = false
+    private val pushNotificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
 
+    }
     companion object {
         private const val REQUEST_FOREGROUND_LOCATION_REQUEST_CODE = 56
         private const val REQUEST_BACKGROUND_LOCATION_REQUEST_CODE = 57
@@ -74,6 +79,11 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 checkBluetoothPermission()
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+
             }
 
         } else {
@@ -133,6 +143,10 @@ class MainActivity : AppCompatActivity(), PoiResponseCallback {
       } else if (requestCode == REQUEST_BLUETOOTH_PERMISSION) {
           if (PackageManager.PERMISSION_GRANTED == grantResults[0]) { // Permission Granted
               startPoiSdk()
+              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                  pushNotificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+
+              }
           }
       }
     }
